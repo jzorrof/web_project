@@ -1,4 +1,4 @@
-from flask import Flask, url_for, render_template
+from flask import Flask, url_for, render_template, request
 app = Flask(__name__)
 
 @app.route('/hello')
@@ -33,5 +33,21 @@ with app.test_request_context():
 	print url_for('test_via_int', testint = 123)
 	print url_for('hello')
 
+#test
+with app.test_request_context('/hello', method='POST'):
+	assert request.path == '/hello'
+	assert request.method == 'POST'
+
+# session
+@app.route('/login', methods=['POST', 'GET'])
+def login2():
+	error = None
+	if request.method == 'POST':
+		if valid_login(request.form['username'],
+					   request.form['password']):
+			return log_the_user_in(request.form['username'])
+		else:
+			error = 'Invalid username/password'
+	return render_template('login.html',error = error)
 if __name__ == '__main__':
 	app.run(debug=True)

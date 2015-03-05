@@ -39,15 +39,23 @@ with app.test_request_context('/hello', method='POST'):
 	assert request.method == 'POST'
 
 # session
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login2', methods=['POST', 'GET'])
 def login2():
 	error = None
-	if request.method == 'POST':
-		if valid_login(request.form['username'],
-					   request.form['password']):
-			return log_the_user_in(request.form['username'])
+	# if request.method == 'POST':
+	# 	if valid_login(request.form['username'],
+	# 				   request.form['password']):
+	# 		return log_the_user_in(request.form['username'])
+	# 	else:
+	# 		error = 'Invalid username/password'
+	# return render_template('login.html',error = error)
+	if request.method =='POST':
+		if request.form['username'] != 'JOE':
+			error = 'error username'
+		elif request.form['password'] != 'abcd1234':
+			error = 'error password'
 		else:
-			error = 'Invalid username/password'
+			print 'login!!'
 	return render_template('login.html',error = error)
 if __name__ == '__main__':
 	app.run(debug=True)

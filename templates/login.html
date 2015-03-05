@@ -1,3 +1,10 @@
 <!doctype html>
 <title>Login</title>
-
+<body>
+	{% if error %}<p class="error"><strong>Error:</strong> {{ error }}{% endif %}
+	<form action="{{ url_for('login2') }}" method="post">
+    	<p><input name="username"></p>
+        <p><input name="password" type="password"></p>
+        <p><button type="submit">Sign In</button></p>
+    </form>
+</body>

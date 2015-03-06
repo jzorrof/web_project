@@ -1,6 +1,6 @@
 import os
 from flask import Flask, url_for, render_template, request, url_for
-from flask import redirect
+from flask import redirect, session, abort, escape
 from flask import send_from_directory
 from werkzeug import secure_filename
 
@@ -12,6 +12,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
 ####upload demo
+app.config['SECRET_KEY'] = 'development key'
 
 @app.route('/hello')
 def hello_world():
@@ -50,10 +51,19 @@ with app.test_request_context('/hello', method='POST'):
 	assert request.path == '/hello'
 	assert request.method == 'POST'
 
-# session
+## request cookies redirect escape
+@app.route('/')
+def show_entries():
+	if not session.get('login_'):
+		abort(401)
+	if 'username_' in session:
+		username=escape(session['username_']) # use escape
+	return render_template('show_entries.html', username=username)
+
 @app.route('/login2', methods=['POST', 'GET'])
 def login2():
 	error = None
+	username = None
 	# if request.method == 'POST':
 	# 	if valid_login(request.form['username'],
 	# 				   request.form['password']):
@@ -67,7 +77,10 @@ def login2():
 		elif request.form['password'] != 'abcd1234':
 			error = 'error password'
 		else:
-			print 'login!!'
+			# print 'login!!'
+			session['login_'] = True
+			session['username_'] = request.form['username']
+			return redirect(url_for('show_entries'))
 	return render_template('login.html',error = error)
 
 ## upload demo

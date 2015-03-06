@@ -1,0 +1,7 @@
+<!doctype html>
+<title>Login OK</title>
+{% if session.login_ %}
+  <h1>Login OK now!! Wellcome {{ username }}!</h1>
+{% else %}
+  <h1>Login failed!!</h1>
+{% endif %}

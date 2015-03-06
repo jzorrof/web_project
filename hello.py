@@ -1,5 +1,16 @@
-from flask import Flask, url_for, render_template, request
+import os
+from flask import Flask, url_for, render_template, request, url_for
+from flask import redirect
+from werkzeug import secure_filename
+
+UPLOAD_FOLDER = '/home/fanzhong/path/to/the/uploads'
+ALOWED_EXTENSIONS = set(['txt'])
+
 app = Flask(__name__)
+####upload demo
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
+####upload demo
 
 @app.route('/hello')
 def hello_world():
@@ -57,5 +68,23 @@ def login2():
 		else:
 			print 'login!!'
 	return render_template('login.html',error = error)
+
+## upload demo
+def allowed_file(filename):
+	return '.' in filename and \
+		filename.rsplit('.', 1)[1] in ALOWED_EXTENSIONS
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+	uploaded_filename = None
+	if request.method == 'POST':
+		file = request.files['file']
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'],
+				filename))
+			return redirect(url_for('upload_file'))
+	return render_template('upload.html')
+
 if __name__ == '__main__':
 	app.run(debug=True)

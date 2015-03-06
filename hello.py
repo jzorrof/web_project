@@ -1,6 +1,7 @@
 import os
 from flask import Flask, url_for, render_template, request, url_for
 from flask import redirect
+from flask import send_from_directory
 from werkzeug import secure_filename
 
 UPLOAD_FOLDER = '/home/fanzhong/path/to/the/uploads'
@@ -83,8 +84,14 @@ def upload_file():
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'],
 				filename))
-			return redirect(url_for('upload_file'))
+			return redirect(url_for('upload_file',filename=filename))
 	return render_template('upload.html')
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+## updload demo
 
 if __name__ == '__main__':
 	app.run(debug=True)

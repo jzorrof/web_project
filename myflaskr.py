@@ -12,7 +12,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 #configuration
 DATABASE = '/tmp/flaskr.db'
 DEBUG = True
-SECRETY_KEY = 'development key'
+SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'default'
 
@@ -59,7 +59,45 @@ def connect_db():
 def close_db_connection(exception):
     top = _app_ctx_stack.top
     if hasattr(top, 'sqlite_db'):
-        pass #top.sqlite_db.close()
+        top.sqlite_db.close()
+
+@app.route('/')
+def show_entries():
+    db = get_db()
+    cur = db.execute('select title, text from entries order by id desc')
+    entries = cur.fetchall()
+    return render_template('myf_show_entries.html', entries = entries)
+
+@app.route('/add', methods=['POST'])
+def add_entry():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    db.execute('insert into entries (title, text) values (?, ?)',
+                [request.form['title'], request.form['text']])
+    db.commit()
+    flash('New entry was successfully posted')
+    return redirect(url_for('show_entries'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error=None
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME']:
+            error = 'InValid username'
+        elif request.form['password'] != app.config['PASSWORD']:
+            error = 'InValid password'
+        else:
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('show_entries'))
+    return render_template('myf_login.html',error = error)
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('show_entries')) 
 
 if __name__ == '__main__':
     init_db()

@@ -2,6 +2,7 @@ import os
 from flask import Flask, url_for, render_template, request, url_for
 from flask import redirect, session, abort, escape
 from flask import send_from_directory
+from flask.ext.script import Manager, Command, Shell
 from werkzeug import secure_filename
 
 UPLOAD_FOLDER = '/home/fanzhong/path/to/the/uploads'

@@ -107,5 +107,10 @@ def uploaded_file(filename):
                                filename)
 ## updload demo
 
+## add bootstrap template demo
+@app.route('/bootstrap')
+def show_bootstrap():
+    return render_template('bootstrap.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

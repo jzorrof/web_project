@@ -49,10 +49,10 @@ def init_db():
         db.cursor().executescript(f.read())
     db.commit()
 
-@app.cli.command('init_db')
-def initdb_command():
-    init_db()
-    print('Initialized the database.')
+# @app.cli.command('init_db')
+# def initdb_command():
+#     init_db()
+#     print('Initialized the database.')
 
 # open a new db connection
 def get_db():

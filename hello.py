@@ -15,7 +15,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 ####upload demo
 app.config['SECRET_KEY'] = 'development key'
 
-@app.route('/hello')
+@app.route('/')
 def hello_world():
     return 'Hello World'
 
@@ -53,7 +53,7 @@ with app.test_request_context('/hello', method='POST'):
     assert request.method == 'POST'
 
 ## request cookies redirect escape
-@app.route('/')
+@app.route('/show_entries')
 def show_entries():
     if not session.get('login_'):
         abort(401)
